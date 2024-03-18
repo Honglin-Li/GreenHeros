@@ -18,9 +18,16 @@ each server has 6 metrics:
 - **CpuWatts** The power consumed by the system CPUs in Watts.
 - **DimmWatts** The power consumed by the system memory DIMMs in Watts.
 - **Minumum** Minimum power in Watts over the sample time(10 seconds).
-- **Peak**
-- **Average**
+- **Peak** Peak power in Watts over the sample time.
+- **Average** Average power in Watts over the sample time.
 
 ## Dashboard sturcture
 The Dashboard includes 3 main boards.
-- Server Integrat
+![Dashboard](images/dashboard.png)
+
+- Server Integration Level Power consumption and CPU utilization overview
+![Server Integration level Overview](images/board1.png)
+- Improvement Results Board
+![Server Integration level Overview](images/board2.png)
+- Server Individual Level Board
+![Server Individual Level Board](images/board3.png)
