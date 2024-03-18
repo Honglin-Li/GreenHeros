@@ -148,9 +148,11 @@ def get_compare_data(df, time_start, time_end, improve_time):
     kw_delta = kw_before - kw_after
 
     # calculate CO2 and Trees
-    # TODO: I have checked the formular, this co2 might be incorrect. please look into it.
-    co2 = kw_delta * 380 / 1000 * 24 * 100 # 100 days kg co2
-    trees = co2 / 500
+    # TODO: the formular of co2_per_day is incorrent, someone can look into it
+    carbon_intensity = 385.47
+    co2_per_day = kw_delta * carbon_intensity / 1000 * 24
+    co2_100_days = co2_per_day * 100 # 100 days kg co2
+    trees = co2_100_days / 500
 
     data = data.loc[time_start: time_end, :]
 
