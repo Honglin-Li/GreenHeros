@@ -161,3 +161,4 @@ cython_debug/
 
 # Data is locally only
 data/
+.DS_Store

@@ -76,7 +76,7 @@ def get_overview_power_data(list_df):
     # to get OVERVIEW data
     df = pd.concat(df_processed_list) # .sort_index()
 
-    # group by time, then aggregation
+    # group by time, then aggregation on server integration level (one record one minute)
     df_overview = df.groupby('Time').agg({
         'CpuUtil': 'mean',
         'CpuWatts': 'sum',
@@ -110,8 +110,11 @@ def get_selected_overview(df, minute):
     # get the latest records
     return df[index_start:].copy()
 
+
 def check_time(time):
     reg_pattern = re.compile(r'\d{2}:\d{2}')
+
+    # TODO, more check, check time range
 
     return reg_pattern.match(time)
 
@@ -120,6 +123,7 @@ def get_compare_data(df, time_start, time_end, improve_time):
     data = df.copy()
 
     # limit time period
+    # TODO: change hard code time border
     if not check_time(time_start):
         time_start = '19:45'
 
@@ -133,11 +137,18 @@ def get_compare_data(df, time_start, time_end, improve_time):
     # one hour KWatts Consumption
     improve_index = data.index.get_loc(improve_time)
     avg_column_index = data.columns.get_loc('Average')
+
+    # the kw consumption one hour before the improve time
     kw_before = data.iloc[improve_index-60: improve_index, avg_column_index].sum()
+
+    # the kw consumption one hour after the improve time
     kw_after = data.iloc[improve_index: improve_index+60, avg_column_index].sum()
+
+    # get kw improvement per hour
     kw_delta = kw_before - kw_after
 
     # calculate CO2 and Trees
+    # TODO: I have checked the formular, this co2 might be incorrect. please look into it.
     co2 = kw_delta * 380 / 1000 * 24 * 100 # 100 days kg co2
     trees = co2 / 500
 
