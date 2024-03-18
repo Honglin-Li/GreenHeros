@@ -59,7 +59,7 @@ def get_overview_power_data(list_df):
     for df in list_df:
         # process data to MINUTE level
         df = df.copy()
-        df['Time'] = df['Time'].str[:16]
+        df['Time'] = df['Time'].str[:16] # Time to minute
         df = df.groupby('Time').agg({
             'CpuUtil': 'mean',
             'CpuWatts': 'mean',
@@ -69,7 +69,7 @@ def get_overview_power_data(list_df):
             'Average': 'mean'
         })
 
-        df[WATT_METRICS] = df[WATT_METRICS] * 60
+        df[WATT_METRICS] = df[WATT_METRICS] * 60 # seconds to 1 minute
 
         df_processed_list.append(df)
 
@@ -145,12 +145,11 @@ def get_compare_data(df, time_start, time_end, improve_time):
     kw_after = data.iloc[improve_index: improve_index+60, avg_column_index].sum()
 
     # get kw improvement per hour
-    kw_delta = kw_before - kw_after
+    kwh_delta = kw_before - kw_after
 
     # calculate CO2 and Trees
-    # TODO: the formular of co2_per_day is incorrent, someone can look into it
     carbon_intensity = 385.47
-    co2_per_day = kw_delta * carbon_intensity / 1000 * 24
+    co2_per_day = kwh_delta * carbon_intensity / 1000 * 24
     co2_100_days = co2_per_day * 100 # 100 days kg co2
     trees = co2_100_days / 500
 
@@ -160,8 +159,7 @@ def get_compare_data(df, time_start, time_end, improve_time):
     y_min = min(data['Average'].min(), data['Minimum'].min())
     y_max = max(data['Average'].max(), data['Minimum'].max())
 
-    return data, y_min, y_max, round(co2, 2), int(trees)
-
+    return data, y_min, y_max, round(co2_100_days, 2), int(trees)
 
 
 """
