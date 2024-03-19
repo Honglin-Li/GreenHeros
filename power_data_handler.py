@@ -22,7 +22,7 @@ def get_y_range(df, columns):
         min_list.append(df[c].min())
         max_list.append(df[c].max())
 
-    return [min(min_list), max(max_list)]
+    return min(min_list), max(max_list)
 
 
 def read_one_csv(csv_name):
@@ -171,8 +171,9 @@ def get_compare_data(df, time_start, time_end, improve_time):
     data = data.loc[time_start: time_end, :]
 
     # get min and max
-    y_min = min(data['Average'].min(), data['Minimum'].min())
-    y_max = max(data['Average'].max(), data['Minimum'].max())
+    # y_min = min(data['Average'].min(), data['Minimum'].min())
+    # y_max = max(data['Average'].max(), data['Minimum'].max())
+    y_min, y_max = get_y_range(data, ['Average', 'Minimum'])
 
     return data, y_min, y_max, round(co2_100_days, 2), round(trees, 2)
 

@@ -114,7 +114,7 @@ with st.container(border=True):
           id_vars='Time', var_name='Series', value_name='KWatts')
 
      # get range of Y axis
-     y_range = get_y_range(ds_overview_selected, chart_columns)
+     y_range = list(get_y_range(ds_overview_selected, chart_columns))
 
      # Create Altair chart
      chart_overview = alt.Chart(data_melted_overview).mark_line().encode(
