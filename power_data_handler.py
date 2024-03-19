@@ -12,6 +12,19 @@ import altair as alt
 
 WATT_METRICS = ['Average', 'Minimum', 'Peak', 'CpuWatts', 'DimmWatts']
 
+
+def get_y_range(df, columns):
+    # the func is to get the y-range for alt.Chart() function
+    min_list = []
+    max_list = []
+
+    for c in columns:
+        min_list.append(df[c].min())
+        max_list.append(df[c].max())
+
+    return [min(min_list), max(max_list)]
+
+
 def read_one_csv(csv_name):
     """
     Read one server power data
@@ -60,16 +73,18 @@ def get_overview_power_data(list_df):
         # process data to MINUTE level
         df = df.copy()
         df['Time'] = df['Time'].str[:16] # Time to minute
+        # each value is estimated one hour power consumption based on the 10 second data
         df = df.groupby('Time').agg({
-            'CpuUtil': 'mean',
-            'CpuWatts': 'mean',
-            'DimmWatts': 'mean',
+            'CpuUtil': 'median',
+            'CpuWatts': 'median',
+            'DimmWatts': 'median',
             'Minimum': 'min',
             'Peak': 'max',
-            'Average': 'mean'
+            'Average': 'median'
         })
 
-        df[WATT_METRICS] = df[WATT_METRICS] * 60 # seconds to 1 minute
+        # turn 1 hour to 1 minute
+        df[WATT_METRICS] = df[WATT_METRICS] / 60
 
         df_processed_list.append(df)
 
@@ -159,7 +174,7 @@ def get_compare_data(df, time_start, time_end, improve_time):
     y_min = min(data['Average'].min(), data['Minimum'].min())
     y_max = max(data['Average'].max(), data['Minimum'].max())
 
-    return data, y_min, y_max, round(co2_100_days, 2), int(trees)
+    return data, y_min, y_max, round(co2_100_days, 2), round(trees, 2)
 
 
 """

@@ -3,7 +3,14 @@ import streamlit as st
 #import pandas_profiling
 #from pydantic_settings import BaseSettings
 #from streamlit_pandas_profiling import st_profile_report
-from power_data_handler import read_one_csv, read_csv_in_list, get_overview_power_data, get_selected_overview, WATT_METRICS, get_compare_data
+from power_data_handler import (
+     get_y_range,
+     read_csv_in_list,
+     get_overview_power_data,
+     get_selected_overview,
+     WATT_METRICS,
+     get_compare_data
+)
 import altair as alt
 #import nivo_chart as nc
 
@@ -102,13 +109,17 @@ with st.container(border=True):
      #st.line_chart(ds_overview_selected[['Average', 'Minimum', 'Peak']])
 
      # Reshape the data for Altair
-     data_melted_overview = ds_overview_selected[['Average', 'Minimum', 'Peak']].reset_index().melt(
+     chart_columns = ['Average', 'Minimum', 'Peak']
+     data_melted_overview = ds_overview_selected[chart_columns].reset_index().melt(
           id_vars='Time', var_name='Series', value_name='KWatts')
+
+     # get range of Y axis
+     y_range = get_y_range(ds_overview_selected, chart_columns)
 
      # Create Altair chart
      chart_overview = alt.Chart(data_melted_overview).mark_line().encode(
           x='Time',
-          y=alt.Y('KWatts', scale=alt.Scale(domain=[135, 168])),
+          y=alt.Y('KWatts', scale=alt.Scale(domain=y_range)),
           color='Series'
      ).interactive()
 
@@ -238,6 +249,7 @@ with st.sidebar:
      st.write("---")
 
      st.header('Metrics Description')
+     # TODO: the metric description is not accurate. is not "over the sample time"
      st.markdown('''
           **:orange[CpuUtil]** CPU utilization in percent.
 
@@ -245,7 +257,7 @@ with st.sidebar:
 
           **:orange[DimmWatts]** The power consumed by the system memory DIMMs in Watts.
 
-          **:orange[Minimum]** Minimum power in Watts over the sample time(10 seconds).
+          **:orange[Minimum]** Minimum power in Watts over the sample time.
 
           **:orange[Peak]** Peak power in Watts over the sample time.
           
