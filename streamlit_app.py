@@ -48,7 +48,7 @@ with st.container():
      for column, (index, value), (i_delta, v_delta) in zip(metric_columns, current_data.items(), delta_data.items()):
           with column:
                with st.container(border=True):
-                    st.metric(label=index, value=int(value), delta=int(v_delta))
+                    st.metric(label=index, value=round(value, 3), delta=round(v_delta, 3))
 
      st.write('Note: The indicator change amount is relative to the indicator data 1 minute ago')
 
